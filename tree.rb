@@ -12,63 +12,94 @@ class Tree
     return if array.nil? || array.empty?
 
     mid = array.length / 2
-    root = Node.new(array[mid])
-    root.left = build_tree(array[0...mid])
-    root.right = build_tree(array[(mid + 1)..array.length])
-    root
+    node = Node.new(array[mid])
+    node.left = build_tree(array[0...mid])
+    node.right = build_tree(array[(mid + 1)..array.length])
+    node
   end
 
-  def find(root_node, value)
-    return root_node if root_node.nil? || root_node.data == value
-    return find(root_node.right, value) if root_node.data < value
-    return find(root_node.left, value) if root_node.data > value
+  def find(node, value)
+    return node if node.nil? || node.data == value
+    return find(node.right, value) if node.data < value
+    return find(node.left, value) if node.data > value
   end
 
-  def insert(root_node, value)
-    return root_node if root_node.nil? || root_node.data == value
+  def insert(node, value)
+    return node if node.nil? || node.data == value
 
-    if root_node.data > value
-      root_node.left.nil? ? root_node.left = Node.new(value) : insert(root_node.left, value)
-    elsif root_node.data < value
-      root_node.right.nil? ? root_node.right = Node.new(value) : insert(root_node.right, value)
+    if node.data > value
+      node.left.nil? ? node.left = Node.new(value) : insert(node.left, value)
+    elsif node.data < value
+      node.right.nil? ? node.right = Node.new(value) : insert(node.right, value)
     end
   end
 
-  def delete(root_node, value)
-    return root_node if root_node.nil?
+  def delete(node, value)
+    return node if node.nil?
 
-    if root_node.data > value
-      root_node.left = delete(root_node.left, value)
-    elsif root_node.data < value
-      root_node.right = delete(root_node.right, value)
+    if node.data > value
+      node.left = delete(node.left, value)
+    elsif node.data < value
+      node.right = delete(node.right, value)
     else
-      if root_node.left.nil?
-        return root_node.right
-      elsif root_node.right.nil?
-        return root_node.left
+      if node.left.nil?
+        return node.right
+      elsif node.right.nil?
+        return node.left
       end
 
-      root_node.data = min_value(root_node.right)
-      root_node.right = delete(root_node.right, root_node.data)
+      node.data = min_value(node.right)
+      node.right = delete(node.right, node.data)
     end
-    root_node
+    node
   end
 
-  def min_value(root_node)
-    min = root_node.data
-    until root_node.left.nil?
-      min = root_node.left.data
-      root_node = root_node.left
+  def min_value(node)
+    min = node.data
+    until node.left.nil?
+      min = node.left.data
+      node = node.left
     end
     min
   end
 
-  def level_order(root_node = root, queue = [])
-    queue << root_node.left unless root_node.left.nil?
-    queue << root_node.right unless root_node.right.nil?
+  def level_order_recursive(node = root, queue = [], &block)
+    yield node
+    queue << node.left unless node.left.nil?
+    queue << node.right unless node.right.nil?
     return if queue.empty?
 
-    level_order(queue.shift, queue)
+    level_order_recursive(queue.shift, queue, &block)
+  end
+
+  def level_order_iterative(node = root, queue = [node])
+    until queue.empty?
+      node = queue.shift
+      yield node
+      queue << node.left unless node.left.nil?
+      queue << node.right unless node.right.nil?
+    end
+  end
+
+  def inorder(node = root, array = [], &block)
+    inorder(node.left, array, &block) unless node.left.nil?
+    block_given? ? yield(node) : array << node.data
+    inorder(node.right, array , &block) unless node.right.nil?
+    array unless block_given?
+  end
+
+  def preorder(node = root, array = [], &block)
+    block_given? ? yield(node) : array << node.data
+    preorder(node.left, array, &block) unless node.left.nil?
+    preorder(node.right, array, &block) unless node.right.nil?
+    array unless block_given?
+  end
+
+  def postorder(node = root, array = [], &block)
+    postorder(node.left, array, &block) unless node.left.nil?
+    postorder(node.right, array, &block) unless node.right.nil?
+    block_given? ? yield(node) : array << node.data
+    array unless block_given?
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -94,7 +125,18 @@ p tree = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 # tree.delete(tree.root, 67)
 # p "new line"
 # p tree.find(tree.root, 7)
-tree.level_order
+tree.level_order_iterative { |node| print "#{node.data} | " }
+puts "\n"
+tree.level_order_recursive { |node| print "#{node.data} | " }
+puts "\n"
+tree.preorder { |node| print "#{node.data} | " }
+puts "\n"
+tree.inorder { |node| print "#{node.data} | " }
+puts "\n"
+tree.postorder { |node| print "#{node.data} | " }
+tree.preorder
+tree.inorder
+tree.postorder
 tree.pretty_print
 # two_tree.pretty_print
-#  { |root_node| print "#{root_node.data} | " }
+#  { |node| print "#{node.data} | " }
