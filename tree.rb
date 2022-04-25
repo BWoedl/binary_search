@@ -18,7 +18,7 @@ class Tree
     node
   end
 
-  def find(node, value)
+  def find(node = root, value)
     return node if node.nil? || node.data == value
     return find(node.right, value) if node.data < value
     return find(node.left, value) if node.data > value
@@ -102,6 +102,27 @@ class Tree
     array unless block_given?
   end
 
+  def height(node)
+    left_count = 0
+    right_count = 0
+    unless node.left.nil?
+      left_count += 1
+      left_count = height(node.left)
+      return left_count
+    end
+    unless node.right.nil?
+      right_count += 1
+      right_count = height(node.left)
+      return right_count
+    end
+    puts [left_count, right_count].max
+  end
+
+
+  def depth
+
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -109,34 +130,3 @@ class Tree
   end
 end
 
-p tree = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
-# p two_tree = Tree.new([1, 7, 3])
-# p tree.root
-# p tree.search(tree.root, 3)
-# p tree.search(tree.root, 6)
-# p tree.search(tree.root, 4)
-# tree.insert(tree.root, 6)
-# tree.insert(tree.root, 5)
-# # # p tree.root
-# # p tree.find(tree.root, 7)
-# # p "new line"
-# tree.pretty_print
-# # tree.delete(tree.root, 9)
-# tree.delete(tree.root, 67)
-# p "new line"
-# p tree.find(tree.root, 7)
-tree.level_order_iterative { |node| print "#{node.data} | " }
-puts "\n"
-tree.level_order_recursive { |node| print "#{node.data} | " }
-puts "\n"
-tree.preorder { |node| print "#{node.data} | " }
-puts "\n"
-tree.inorder { |node| print "#{node.data} | " }
-puts "\n"
-tree.postorder { |node| print "#{node.data} | " }
-tree.preorder
-tree.inorder
-tree.postorder
-tree.pretty_print
-# two_tree.pretty_print
-#  { |node| print "#{node.data} | " }
