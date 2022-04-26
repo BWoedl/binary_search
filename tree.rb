@@ -108,22 +108,6 @@ class Tree
     [height(node.left, count), height(node.right, count)].max
   end
 
-
-  # def depth(node = root, parent = root, count = -1)
-
-  #   return count if node == parent
-
-  #   count += 1
-
-  #   if parent.left != nil
-  #     count += 1
-  #     depth(node, parent.left, count)
-  #   elsif parent.right != nil
-  #     count += 1
-  #     depth(node, parent.right, count)
-  #   end
-  # end
-
   def depth(parent = root, node = root, count = 0)
     if parent.nil? 
       return "Not found"
