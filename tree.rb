@@ -119,26 +119,21 @@ class Tree
     return depth(parent.left, node, count) if parent.data > node.data
   end
 
-  def balanced?(node = root, unbalanced = false)
+  def balanced?(node = root, balanced = true)
     if node.nil? 
-      return unbalanced
+      return balanced
     elsif
       (height(node.left) - height(node.right)).abs > 1
-      unbalanced = true
+      balanced = false
     end
-      return balanced?(node.right, unbalanced) if node.right.data < node.data
+      return balanced?(node.right, balanced) if node.right.data < node.data
       return balanced?(node.left, unbalanced) if node.left.data > node.data
-    return unbalanced
+    return balanced
   end
-    # 1. Take node and get height of its left subtree
-    # 2. Take node and get height of its right subtree
-    # 3. Compare the 2 and change balanced state if difference in height greater than 1
-    # 4. Move to next node
 
-  def rebalance(node = root)
-    array = []
+  def rebalance(node = root, array = [])
     array = preorder(node)
-    root = array.build_tree
+    @root = build_tree(array)
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
