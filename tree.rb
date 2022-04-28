@@ -102,25 +102,38 @@ class Tree
     array unless block_given?
   end
 
-  def height(node)
-    left_count = 0
-    right_count = 0
-    unless node.left.nil?
-      left_count += 1
-      left_count = height(node.left)
-      return left_count
-    end
-    unless node.right.nil?
-      right_count += 1
-      right_count = height(node.left)
-      return right_count
-    end
-    puts [left_count, right_count].max
+  def height(node, count = -1)
+    return count if node.nil?
+    count += 1
+    [height(node.left, count), height(node.right, count)].max
   end
 
+  def depth(parent = root, node = root, count = 0)
+    if parent.nil? 
+      return "Not found"
+    elsif parent == node
+      return count
+    end
+    count +=1
+    return depth(parent.right, node, count) if parent.data < node.data
+    return depth(parent.left, node, count) if parent.data > node.data
+  end
 
-  def depth
+  def balanced?(node = root, balanced = true)
+    if node.nil? 
+      return balanced
+    elsif
+      (height(node.left) - height(node.right)).abs > 1
+      balanced = false
+    end
+      return balanced?(node.right, balanced) if node.right.data < node.data
+      return balanced?(node.left, unbalanced) if node.left.data > node.data
+    return balanced
+  end
 
+  def rebalance(node = root, array = [])
+    array = preorder(node)
+    @root = build_tree(array)
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
